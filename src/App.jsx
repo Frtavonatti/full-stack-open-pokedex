@@ -15,7 +15,6 @@ const mapResults = (({ results }) => results.map(({ url, name }) => ({
 const App = () => {
   const match = useMatch('/pokemon/:name')
   const { data: pokemonList, error, isLoading } = useApi('https://pokeapi.co/api/v2/pokemon/?limit=50', mapResults)
-  console.log(pokemonList)
 
   if (isLoading) {
     return <LoadingSpinner />
@@ -30,9 +29,7 @@ const App = () => {
   if (match && match.params) {
     const pokemonId = pokemonList.find(({ name }) => name === match.params.name).id
     previous = pokemonList.find(({ id }) => id === pokemonId - 1)
-    // console.log('previous:', previous)
     next = pokemonList.find(({ id }) => id === pokemonId + 1)
-    // console.log('next:', next)
   }
 
   return (
