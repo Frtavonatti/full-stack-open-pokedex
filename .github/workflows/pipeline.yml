@@ -42,13 +42,17 @@ jobs:
     if: ${{ needs.deploy.result == 'success' }}
     steps: 
       - name: Notify discord
-        uses: rjstone/discord-webhook-notify@v2
-        with: 
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          username: Discord bot
-          severity: info
-          title: Build & Deployment Successful
-          description: Commit [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) deployed successfully
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK }} \
+            -H "Content-Type: application/json" \
+            -d '{
+              "username": "GitHub Actions Bot",
+              "embeds": [{
+                "title": "Build & Deployment Successful",
+                "description": "Commit [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) deployed successfully",
+                "color": 5763719
+              }]
+            }'
 
   notify_failure:
     runs-on: ubuntu-latest
@@ -56,13 +60,17 @@ jobs:
     if: ${{ needs.deploy.result == 'failure' }}
     steps: 
       - name: Notify discord
-        uses: rjstone/discord-webhook-notify@v2
-        with: 
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
-          username: Discord bot
-          severity: error
-          title: Deployment Error
-          description: Deployment failed for commit [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK }} \
+            -H "Content-Type: application/json" \
+            -d '{
+              "username": "GitHub Actions Bot",
+              "embeds": [{
+                "title": "Deployment Error",
+                "description": "Deployment failed for commit [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})",
+                "color": 15548997
+              }]
+            }'
 
   tag_release:
     needs: [deploy]
